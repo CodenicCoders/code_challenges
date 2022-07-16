@@ -17,29 +17,31 @@ void main() {
 String findWord(List<String> symbols) {
   final word = <String>[];
 
-  // Convert the each string symbol into key-value pairs wherein the keys
-  // represent the right letters and the values represent the left letters.
+  // Key = Left letter, Value = Right letter
+  final symbolsMaps = <String, String>{};
 
-  final symbolsMap = <String, String>{};
+  // Key = Right letter, Value = Left letter
+  final symbolsMapInverted = <String, String>{};
 
   for (final symbol in symbols) {
-    symbolsMap[symbol[2]] = symbol[0];
+    symbolsMaps[symbol[0]] = symbol[2];
+    symbolsMapInverted[symbol[2]] = symbol[0];
   }
 
-  // The letter that is available ONLY on the right side is the last letter of
-  // the word.
-  var lastLetter = symbolsMap.keys
-      .firstWhere((leftLetter) => !symbolsMap.values.contains(leftLetter));
+  // Find the last letter which is the right letter that doesn't appear on the
+  // left side.
+  var lastLetter = symbolsMaps.values
+      .firstWhere((rightLetter) => !symbolsMaps.containsKey(rightLetter));
 
   word.insert(0, lastLetter);
 
   do {
     // Get the next last letter.
     // This is left letter associated with the last letter.
-    lastLetter = symbolsMap.remove(lastLetter)!;
+    lastLetter = symbolsMapInverted.remove(lastLetter)!;
 
     word.insert(0, lastLetter);
-  } while (symbolsMap.isNotEmpty);
+  } while (symbolsMapInverted.isNotEmpty);
 
   return word.join();
 }
